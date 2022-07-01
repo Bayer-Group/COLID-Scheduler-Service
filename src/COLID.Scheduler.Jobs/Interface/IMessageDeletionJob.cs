@@ -5,5 +5,10 @@
     /// </summary>
     public interface IMessageDeletionJob : IJob
     {
+        /// <summary>
+        /// Deletes all expired Messages
+        /// </summary> 
+        public void DeleteExpiredMessages();
     }
+     
 }

@@ -9,7 +9,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="COLID.Identity" Version="2.0.18" />
+    <PackageReference Include="COLID.Common" Version="2.0.116" />
+    <PackageReference Include="COLID.Exception" Version="2.0.112" />
+    <PackageReference Include="COLID.Identity" Version="2.0.106" />
+    <PackageReference Include="CorrelationId" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
+    <PackageReference Include="NEST" Version="7.10.0" />
   </ItemGroup>
 </Project>

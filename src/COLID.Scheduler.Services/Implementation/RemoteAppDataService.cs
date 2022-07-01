@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Authentication;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using COLID.Identity.Extensions;
@@ -11,6 +8,7 @@ using COLID.Identity.Services;
 using COLID.Scheduler.Common.DataModels;
 using COLID.Scheduler.Services.Configuration;
 using COLID.Scheduler.Services.Interface;
+using CorrelationId.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -22,11 +20,12 @@ namespace COLID.Scheduler.Services.Implementation
         private readonly CancellationToken _cancellationToken;
         private readonly IHttpClientFactory _clientFactory;
         private readonly IConfiguration _configuration;
+        private readonly ICorrelationContextAccessor _correlationContext;
         private readonly ITokenService<AppDataServiceTokenOptions> _tokenService;
         private readonly ILogger<RemoteAppDataService> _logger;
 
         private readonly string _appDataServiceUserApi;
-        private readonly string _appDataServiceSchedulerApi;
+        private readonly string _appDataServiceMessagesApi;
         private readonly string _activeDirectoryStatusApi;
         private readonly string _appDataServiceColidEntriesInvalidUserApi;
 
@@ -34,18 +33,20 @@ namespace COLID.Scheduler.Services.Implementation
             IHttpClientFactory clientFactory,
             IConfiguration configuration,
             IHttpContextAccessor httpContextAccessor,
+            ICorrelationContextAccessor correlationContext,
             ITokenService<AppDataServiceTokenOptions> tokenService,
             ILogger<RemoteAppDataService> logger)
         {
             _clientFactory = clientFactory;
             _configuration = configuration;
             _tokenService = tokenService;
+            _correlationContext = correlationContext;
             _cancellationToken = httpContextAccessor?.HttpContext?.RequestAborted ?? CancellationToken.None;
             _logger = logger;
 
             var serverUrl = _configuration.GetConnectionString("AppDataServiceUrl");
             _appDataServiceUserApi = $"{serverUrl}/api/users";
-            _appDataServiceSchedulerApi = $"{serverUrl}/api/scheduler";
+            _appDataServiceMessagesApi = $"{serverUrl}/api/messages";
             _activeDirectoryStatusApi = $"{serverUrl}/api/activeDirectory/users/status";
             _appDataServiceColidEntriesInvalidUserApi = $"{serverUrl}/api/colidEntries/invalidUser";
         }
@@ -56,9 +57,9 @@ namespace COLID.Scheduler.Services.Implementation
             {
                 var reqBody = string.Empty;
 
-                var response = httpClient.SendRequestWithBearerTokenAsync(
+                var response = httpClient.SendRequestWithOptionsAsync(
                     HttpMethod.Post, _appDataServiceUserApi, reqBody,
-                    await _tokenService.GetAccessTokenForWebApiAsync().ConfigureAwait(false), _cancellationToken).GetAwaiter().GetResult();
+                    await _tokenService.GetAccessTokenForWebApiAsync().ConfigureAwait(false), _cancellationToken, _correlationContext.CorrelationContext).GetAwaiter().GetResult();
 
                 response.EnsureSuccessStatusCode();
             }
@@ -68,9 +69,9 @@ namespace COLID.Scheduler.Services.Implementation
         {
             using (var httpClient = _clientFactory.CreateClient())
             {
-                var response = httpClient.SendRequestWithBearerTokenAsync(
-                    HttpMethod.Get, $"{_appDataServiceSchedulerApi}/messages/toSend", string.Empty,
-                    await _tokenService.GetAccessTokenForWebApiAsync().ConfigureAwait(false), _cancellationToken).GetAwaiter().GetResult();
+                var response = httpClient.SendRequestWithOptionsAsync(
+                    HttpMethod.Get, $"{_appDataServiceMessagesApi}/toSend", string.Empty,
+                    await _tokenService.GetAccessTokenForWebApiAsync().ConfigureAwait(false), _cancellationToken, _correlationContext.CorrelationContext).GetAwaiter().GetResult();
 
                 response.EnsureSuccessStatusCode();
 
@@ -90,9 +91,9 @@ namespace COLID.Scheduler.Services.Implementation
             {
                 var path = $"{_appDataServiceUserApi}/{userId}/messages/{messageId}/markSent";
 
-                var response = httpClient.SendRequestWithBearerTokenAsync(
+                var response = httpClient.SendRequestWithOptionsAsync(
                     HttpMethod.Put, path, string.Empty,
-                    await _tokenService.GetAccessTokenForWebApiAsync().ConfigureAwait(false), _cancellationToken).GetAwaiter().GetResult();
+                    await _tokenService.GetAccessTokenForWebApiAsync().ConfigureAwait(false), _cancellationToken, _correlationContext.CorrelationContext).GetAwaiter().GetResult();
 
                 response.EnsureSuccessStatusCode();
             }
@@ -107,13 +108,13 @@ namespace COLID.Scheduler.Services.Implementation
             {
                 var accessToken = await _tokenService.GetAccessTokenForWebApiAsync();
                 _logger.LogDebug($"accessToken={accessToken}");
-                response = await httpClient.SendRequestWithBearerTokenAsync(HttpMethod.Post, _activeDirectoryStatusApi, adUserEmailSet, accessToken, _cancellationToken);
+                response = await httpClient.SendRequestWithOptionsAsync(HttpMethod.Post, _activeDirectoryStatusApi, adUserEmailSet, accessToken, _cancellationToken, _correlationContext.CorrelationContext);
                 _logger.LogDebug($"response={response}");
                 response.EnsureSuccessStatusCode();
             }
             catch (AuthenticationException ex)
             {
-                _logger.LogError("An error occured during authentication: ", ex);
+                _logger.LogError("An error occurred during authentication: ", ex);
             }
 
             if (response.Content != null)
@@ -133,13 +134,62 @@ namespace COLID.Scheduler.Services.Implementation
             try
             {
                 var accessToken = await _tokenService.GetAccessTokenForWebApiAsync();
-                var response = await httpClient.SendRequestWithBearerTokenAsync(HttpMethod.Put, path, content, accessToken, _cancellationToken);
+                var response = await httpClient.SendRequestWithOptionsAsync(HttpMethod.Put, path, content, accessToken, _cancellationToken, _correlationContext.CorrelationContext);
                 response.EnsureSuccessStatusCode();
             }
             catch (AuthenticationException ex)
             {
-                _logger.LogError("An error occured during authentication: ", ex);
+                _logger.LogError("An error occurred during authentication: ", ex);
             }
         }
+
+        public async void DeleteExpiredMessages()
+        {
+            using (var httpClient = _clientFactory.CreateClient())
+            {
+                try
+                {
+                    var path = $"{_appDataServiceMessagesApi}";
+                    var accessToken = await _tokenService.GetAccessTokenForWebApiAsync();
+                    var response = await httpClient.SendRequestWithBearerTokenAsync(
+                        HttpMethod.Delete, path, string.Empty, accessToken, _cancellationToken);
+                    _logger.LogInformation($"retrieved a response");
+                }
+                catch (AuthenticationException ex)
+                {
+                    _logger.LogError("An error occurred", ex);
+                }
+                catch (HttpRequestException ex)
+                {
+                    _logger.LogError("Couldn't connect to the remote reporting service.", ex);
+                }
+
+            }
+        }
+
+        public async void ProcessStoredQueries()
+        {
+            using (var httpClient = _clientFactory.CreateClient())
+            {
+                var path = $"{_appDataServiceUserApi}/processStoredQueries";
+                var accessToken = await _tokenService.GetAccessTokenForWebApiAsync();
+                HttpResponseMessage response = null;
+                try
+                {
+                    response = await httpClient.SendRequestWithBearerTokenAsync(
+                        HttpMethod.Post, path, string.Empty, accessToken, _cancellationToken);
+                    _logger.LogInformation($"retrieved a response");
+                }
+                catch (AuthenticationException ex)
+                {
+                    _logger.LogError("An error occurred", ex);
+                }
+                catch (HttpRequestException ex)
+                {
+                    _logger.LogError("Couldn't connect to the remote reporting service.", ex);
+                }
+            }
+        }
+
     }
 }

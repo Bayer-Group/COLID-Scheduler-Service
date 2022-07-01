@@ -44,5 +44,15 @@ namespace COLID.Scheduler.Services.Interface
         /// </summary>
         /// <param name="ceciu">the ColidEntryContactInvalidUsersDto to consider</param>
         Task CreateMessagesOfInvalidUsersForContact(ColidEntryContactInvalidUsersDto ceciu);
+        
+        /// <summary>
+        /// Triggers the deletion of expired messages in the appDataService.
+        /// </summary>
+        void DeleteExpiredMessages();
+
+        /// <summary>
+        /// Processes all users stored queries in the appDataService.
+        /// </summary>
+        void ProcessStoredQueries();
     }
 }

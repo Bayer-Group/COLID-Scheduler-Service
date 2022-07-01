@@ -2,6 +2,8 @@
 using COLID.Scheduler.ExceptionMiddleware;
 using COLID.Scheduler.Services;
 using COLID.SchedulerService.Hangfire;
+using CorrelationId;
+using CorrelationId.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using COLID.StatisticsLog;
+using COLID.Common.Logger;
 
 namespace COLID.SchedulerService
 {
@@ -30,6 +34,8 @@ namespace COLID.SchedulerService
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHttpClient();
             services.AddHealthChecks();
+            services.AddDefaultCorrelationId();
+            services.AddCorrelationIdLogger();
 
             services.AddLogging();
             services.AddServicesModule(Configuration);
@@ -38,10 +44,13 @@ namespace COLID.SchedulerService
             services.RegisterHangfire(Configuration);
 
             services.AddIdentityModule(Configuration);
+
+            services.AddStatisticsLogModule(Configuration);
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
+            app.UseCorrelationId();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>

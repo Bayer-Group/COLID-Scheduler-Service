@@ -22,5 +22,29 @@ namespace COLID.Scheduler.Services.Interface
         /// <param name="userEmailAddress">The email address of the user to search for.</param>
         /// <returns>List of all entries with their contact contacts.</returns>
         Task<IEnumerable<ColidEntryContactsDto>> GetContactReferencedEntries(string userEmailAddress);
+
+        /// <summary>
+        ///  Returns the number of different expressions of used consumer groups
+        /// </summary>
+        /// <returns>A list of consumer groups</returns>
+        Task<IEnumerable<PropertyCharacteristicDto>> GetConsumerGroupCharacteristics();
+
+        /// <summary>
+        /// Returns the number of different expressions of used information classification
+        /// </summary>
+        /// <returns>A list of expression counts</returns>
+        Task<IEnumerable<PropertyCharacteristicDto>> GetInformationClassificationCharacteristics();
+
+        /// <summary>
+        /// Returns the number of different expressions COLID Types
+        /// </summary>
+        /// <returns>A list of expression counts for colid types</returns>
+        Task<IEnumerable<PropertyCharacteristicDto>> GetResourceTypeCharacteristics();
+
+        /// <summary>
+        /// Returns the number of different expressions resource lifecycle statuses
+        /// </summary>
+        /// <returns>A list of expression counts for colid types</returns>
+        Task<IEnumerable<PropertyCharacteristicDto>> GetLifecycleStatusCharacteristics();
     }
 }

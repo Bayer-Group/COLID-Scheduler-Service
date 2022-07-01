@@ -34,6 +34,9 @@ namespace COLID.SchedulerService.Hangfire
             services.AddTransient<IStoredQueriesExecutionJob, StoredQueriesExecutionJob>();
             services.AddTransient<IEntryChangedNotificationJob, EntryChangedNotificationJob>();
             services.AddTransient<IUserInvalidNotificationJob, UserInvalidNotificationJob>();
+            services.AddTransient<IResourceStatisticsJob, ResourceStatisticsJob>();
+            services.AddTransient<IUniqueUserStatisticsJob, UniqueUserStatisticsJob>();
+            services.AddTransient<IInvalidDitributionEndpointNotificationJob, InvalidDitributionEndpointNotificationJob>();
 
             return services;
         }
@@ -121,6 +124,7 @@ namespace COLID.SchedulerService.Hangfire
         /// This will setup the Hangfire jobs which will be processed.
         /// </summary>
         /// <param name="app">The <see cref="IApplicationBuilder"/> object for configuration</param>
+        /// <param name="config">The <see cref="IConfiguration"/> object for configuration</param>
         public static IApplicationBuilder SetupHangfireJobs(this IApplicationBuilder app, IConfiguration config)
         {
             var logger = app.ApplicationServices.GetRequiredService<ILogger<IJob>>();
@@ -141,28 +145,45 @@ namespace COLID.SchedulerService.Hangfire
                 TimeZoneInfo.Local,
                 Queue.Alpha);
 
-            /* NOT YET ACTIVE
-            RecurringJob.AddOrUpdate<IEntryChangedNotificationJob>(nameof(EntryChangedNotificationJob),
+            var messageDeletionJobConfig = config.GetValue<string>("CronJobConfig:MessageDeletionJob");
+            logger.LogInformation("CronJob config for MessageDeletionJob: {MessageDeletionJob}", messageDeletionJobConfig);
+            RecurringJob.AddOrUpdate<IMessageDeletionJob>(nameof(MessageDeletionJob),
                 job => job.ExecuteAsync(CancellationToken.None),
-                config.GetValue<string>("CronJobConfig:EntryChangedNotificationJob"),
+                config.GetValue<string>("CronJobConfig:MessageDeletionJob"),
                 TimeZoneInfo.Local,
                 Queue.Alpha);
 
+            var ResourceStatisticsJob = config.GetValue<string>("CronJobConfig:ResourceStatisticsJob");
+            logger.LogInformation("CronJob config for ResourceStatisticsJob: {ResourceStatisticsJob}", ResourceStatisticsJob);
+            RecurringJob.AddOrUpdate<IResourceStatisticsJob>(nameof(ResourceStatisticsJob),
+                job => job.ExecuteAsync(CancellationToken.None),
+                config.GetValue<string>("CronJobConfig:ResourceStatisticsJob"),
+                TimeZoneInfo.Local,
+                Queue.Alpha);
+
+            var UniqueUserStatisticsJob = config.GetValue<string>("CronJobConfig:UniqueUserStatisticsJob");
+            logger.LogInformation("CronJob config for UniqueUserStatisticsJob: {UniqueUserStatisticsJob}", UniqueUserStatisticsJob);
+            RecurringJob.AddOrUpdate<IUniqueUserStatisticsJob>(nameof(UniqueUserStatisticsJob),
+                job => job.ExecuteAsync(CancellationToken.None),
+                config.GetValue<string>("CronJobConfig:UniqueUserStatisticsJob"),
+                TimeZoneInfo.Local,
+                Queue.Alpha);
+
+            var StoredQueriesExecutionJob = config.GetValue<string>("CronJobConfig:StoredQueriesExecutionJob");
+            logger.LogInformation("CronJob config for StoredQueriesExecutionJob: {StoredQueriesExecutionJob}", StoredQueriesExecutionJob);
             RecurringJob.AddOrUpdate<IStoredQueriesExecutionJob>(nameof(StoredQueriesExecutionJob),
                 job => job.ExecuteAsync(CancellationToken.None),
                 config.GetValue<string>("CronJobConfig:StoredQueriesExecutionJob"),
                 TimeZoneInfo.Local,
                 Queue.Alpha);
 
-                RecurringJob.AddOrUpdate<IMessageDeletionJob>(nameof(MessageDeletionJob),
-                    job => job.ExecuteAsync(CancellationToken.None),
-                    config.GetValue<string>("CronJobConfig:MessageDeletionJob"),
-                    TimeZoneInfo.Local,
-                    Queue.Alpha);
-            */
-            RecurringJob.RemoveIfExists(nameof(EntryChangedNotificationJob));
-            RecurringJob.RemoveIfExists(nameof(MessageDeletionJob));
-            RecurringJob.RemoveIfExists(nameof(StoredQueriesExecutionJob));
+            var InvalidDitributionEndpointNotificationJob = config.GetValue<string>("CronJobConfig:InvalidDitributionEndpointNotificationJob");
+            logger.LogInformation("CronJob config for InvalidDitributionEndpointNotificationJob: {InvalidDitributionEndpointNotificationJob}", InvalidDitributionEndpointNotificationJob);
+            RecurringJob.AddOrUpdate<IInvalidDitributionEndpointNotificationJob>(nameof(InvalidDitributionEndpointNotificationJob),
+                job => job.ExecuteAsync(CancellationToken.None),
+                config.GetValue<string>("CronJobConfig:InvalidDitributionEndpointNotificationJob"),
+                TimeZoneInfo.Local,
+                Queue.Alpha);
 
             return app;
         }

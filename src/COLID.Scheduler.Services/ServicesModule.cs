@@ -20,6 +20,8 @@ namespace COLID.Scheduler.Services
         {
             services.Configure<AppDataServiceTokenOptions>(configuration.GetSection("AppDataServiceTokenOptions"));
             services.Configure<ReportingServiceTokenOptions>(configuration.GetSection("ReportingServiceTokenOptions"));
+            services.Configure<SearchServiceTokenOptions>(configuration.GetSection("SearchServiceTokenOptions"));
+            services.Configure<RegistrationServiceTokenOptions>(configuration.GetSection("RegistrationServiceTokenOptions"));
 
             var smtp = configuration.GetSection("SmtpOptions");
             services.Configure<SmtpOptions>(smtp);
@@ -33,6 +35,8 @@ namespace COLID.Scheduler.Services
             services.AddTransient<IRemoteAppDataService, RemoteAppDataService>();
             services.AddTransient<IRemoteReportingService, RemoteReportingService>();
             services.AddTransient<IMailService, MailService>();
+            services.AddTransient<IRemoteSearchService, RemoteSearchService>();
+            services.AddTransient<IRemoteRegistrationService, RemoteRegistrationService>();
 
             return services;
         }
