@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using COLID.Identity.Extensions;
@@ -9,6 +10,7 @@ using CorrelationId.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace COLID.Scheduler.Services.Implementation
 {
@@ -22,6 +24,7 @@ namespace COLID.Scheduler.Services.Implementation
         private readonly ILogger<RemoteRegistrationService> _logger;
 
         private readonly string _appRegistrationServiceNotifyInvaildDistributionEndpointApi;
+        private readonly string _appRegistrationServiceNotifyForDueReviewsApi;
 
         public RemoteRegistrationService(
             IHttpClientFactory clientFactory,
@@ -40,6 +43,7 @@ namespace COLID.Scheduler.Services.Implementation
 
             var serverUrl = _configuration.GetConnectionString("RegistrationServiceUrl");
             _appRegistrationServiceNotifyInvaildDistributionEndpointApi = $"{serverUrl}/api/EndpointTest";
+            _appRegistrationServiceNotifyForDueReviewsApi = $"{serverUrl}/api/v3/resource";
         }
         public async Task CheckDistributionEndpointValidityAndNotifyUsersAsync()
         {
@@ -52,6 +56,24 @@ namespace COLID.Scheduler.Services.Implementation
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("remote registration api called for checking invalid distribution endpoint(s)");
+            }
+        }
+
+        public async Task<Dictionary<string, string>> NotifyDataStewardsForDueResourceReview()
+        {
+            using (var httpClient = _clientFactory.CreateClient())
+            {
+                var notifyForDueReviewsApi = this._appRegistrationServiceNotifyForDueReviewsApi + "/notifyDueReviews";
+                _logger.LogInformation("remote registration api called for notify users for due resources");
+                var response = await httpClient.SendRequestWithOptionsAsync(
+                    HttpMethod.Put, notifyForDueReviewsApi, string.Empty,
+                    await _tokenService.GetAccessTokenForWebApiAsync().ConfigureAwait(false), _cancellationToken, _correlationContext.CorrelationContext);
+
+                response.EnsureSuccessStatusCode();
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                Dictionary<string, string> emailList = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonResponse);
+                return emailList;
             }
         }
     }

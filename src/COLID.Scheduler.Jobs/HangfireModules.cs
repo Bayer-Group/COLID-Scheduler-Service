@@ -37,6 +37,8 @@ namespace COLID.SchedulerService.Hangfire
             services.AddTransient<IResourceStatisticsJob, ResourceStatisticsJob>();
             services.AddTransient<IUniqueUserStatisticsJob, UniqueUserStatisticsJob>();
             services.AddTransient<IInvalidDitributionEndpointNotificationJob, InvalidDitributionEndpointNotificationJob>();
+            services.AddTransient<IDueResourcesNotificationJob, DueResourcesNotificationJob>();
+            services.AddTransient<ISaveSearchesSubscriptionsFavListStasticsJob, SaveSearchesSubscriptionsFavListStasticsJob>();
 
             return services;
         }
@@ -161,6 +163,14 @@ namespace COLID.SchedulerService.Hangfire
                 TimeZoneInfo.Local,
                 Queue.Alpha);
 
+            var SaveSearchesSubscriptionsFavListStasticsJob = config.GetValue<string>("CronJobConfig:SaveSearchesSubscriptionsFavListStasticsJob");
+            logger.LogInformation("CronJob config for SaveSearchesSubscriptionsFavListStasticsJob: {SaveSearchesSubscriptionsFavListStasticsJob}", SaveSearchesSubscriptionsFavListStasticsJob);
+            RecurringJob.AddOrUpdate<ISaveSearchesSubscriptionsFavListStasticsJob>(nameof(SaveSearchesSubscriptionsFavListStasticsJob),
+                job => job.ExecuteAsync(CancellationToken.None),
+                config.GetValue<string>("CronJobConfig:SaveSearchesSubscriptionsFavListStasticsJob"),
+                TimeZoneInfo.Local,
+                Queue.Alpha);
+
             var UniqueUserStatisticsJob = config.GetValue<string>("CronJobConfig:UniqueUserStatisticsJob");
             logger.LogInformation("CronJob config for UniqueUserStatisticsJob: {UniqueUserStatisticsJob}", UniqueUserStatisticsJob);
             RecurringJob.AddOrUpdate<IUniqueUserStatisticsJob>(nameof(UniqueUserStatisticsJob),
@@ -182,6 +192,14 @@ namespace COLID.SchedulerService.Hangfire
             RecurringJob.AddOrUpdate<IInvalidDitributionEndpointNotificationJob>(nameof(InvalidDitributionEndpointNotificationJob),
                 job => job.ExecuteAsync(CancellationToken.None),
                 config.GetValue<string>("CronJobConfig:InvalidDitributionEndpointNotificationJob"),
+                TimeZoneInfo.Local,
+                Queue.Alpha);
+
+            var DueResourcesNotificationJob = config.GetValue<string>("CronJobConfig:DueResourcesNotificationJob");
+            logger.LogInformation("CronJob config for DueResourcesNotificationJob: {DueResourcesNotificationJob}", DueResourcesNotificationJob);
+            RecurringJob.AddOrUpdate<IDueResourcesNotificationJob>(nameof(DueResourcesNotificationJob),
+                job => job.ExecuteAsync(CancellationToken.None),
+                config.GetValue<string>("CronJobConfig:DueResourcesNotificationJob"),
                 TimeZoneInfo.Local,
                 Queue.Alpha);
 

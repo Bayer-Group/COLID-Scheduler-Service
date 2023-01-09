@@ -27,7 +27,7 @@ namespace COLID.Scheduler.Services.Implementation
         private readonly string _appDataServiceUserApi;
         private readonly string _appDataServiceMessagesApi;
         private readonly string _activeDirectoryStatusApi;
-        private readonly string _appDataServiceColidEntriesInvalidUserApi;
+        private readonly string _appDataServiceColidEntries;
 
         public RemoteAppDataService(
             IHttpClientFactory clientFactory,
@@ -48,7 +48,8 @@ namespace COLID.Scheduler.Services.Implementation
             _appDataServiceUserApi = $"{serverUrl}/api/users";
             _appDataServiceMessagesApi = $"{serverUrl}/api/messages";
             _activeDirectoryStatusApi = $"{serverUrl}/api/activeDirectory/users/status";
-            _appDataServiceColidEntriesInvalidUserApi = $"{serverUrl}/api/colidEntries/invalidUser";
+            //_appDataServiceColidEntriesInvalidUserApi = $"{serverUrl}/api/colidEntries/invalidUser";
+            _appDataServiceColidEntries = $"{serverUrl}/api/colidEntries";
         }
 
         public async void GetUsers()
@@ -65,6 +66,7 @@ namespace COLID.Scheduler.Services.Implementation
             }
         }
 
+        
         public async Task<IList<Message>> GetMessagesToSend()
         {
             using (var httpClient = _clientFactory.CreateClient())
@@ -129,7 +131,7 @@ namespace COLID.Scheduler.Services.Implementation
         public async Task CreateMessagesOfInvalidUsersForContact(ColidEntryContactInvalidUsersDto content)
         {
             using var httpClient = _clientFactory.CreateClient();
-            var path = $"{_appDataServiceColidEntriesInvalidUserApi}";
+            var path = $"{_appDataServiceColidEntries}/invalidUser";
 
             try
             {
@@ -191,5 +193,64 @@ namespace COLID.Scheduler.Services.Implementation
             }
         }
 
+        public async Task<Dictionary<string, int>> GetAllSubscribedSearchFiltersCountDMP()
+        {
+            using (var httpClient = _clientFactory.CreateClient())
+            {
+                var response = httpClient.SendRequestWithOptionsAsync(
+                    HttpMethod.Get, $"{_appDataServiceUserApi}/allSubscribedSearchFiltersDataMarketplaceCount", string.Empty,
+                    await _tokenService.GetAccessTokenForWebApiAsync().ConfigureAwait(false), _cancellationToken, _correlationContext.CorrelationContext).GetAwaiter().GetResult();
+
+                response.EnsureSuccessStatusCode();
+
+                if (response.Content != null)
+                {
+                    var responseContent = await response.Content.ReadAsAsync<Dictionary<string, int>>();
+                    return responseContent;
+                }
+
+                return new Dictionary<string, int>();
+            }
+        }
+        
+        public async Task<Dictionary<string, int>> GetAllFavoritesListCount()
+        {
+            using (var httpClient = _clientFactory.CreateClient())
+            {
+                var response = httpClient.SendRequestWithOptionsAsync(
+                    HttpMethod.Get, $"{_appDataServiceUserApi}/getAllFavoritesListCount", string.Empty,
+                    await _tokenService.GetAccessTokenForWebApiAsync().ConfigureAwait(false), _cancellationToken, _correlationContext.CorrelationContext).GetAwaiter().GetResult();
+
+                response.EnsureSuccessStatusCode();
+
+                if (response.Content != null)
+                {
+                    var responseContent = await response.Content.ReadAsAsync<Dictionary<string, int>>();
+                    return responseContent;
+                }
+
+                return new Dictionary<string, int>();
+            }
+        }
+
+        public async Task<Dictionary<string, int>> GetAllSubscriptionsCount()
+        {
+            using (var httpClient = _clientFactory.CreateClient())
+            {
+                var response = httpClient.SendRequestWithOptionsAsync(
+                    HttpMethod.Get, $"{_appDataServiceColidEntries}/GetAllSubscriptionsCount", string.Empty,
+                    await _tokenService.GetAccessTokenForWebApiAsync().ConfigureAwait(false), _cancellationToken, _correlationContext.CorrelationContext).GetAwaiter().GetResult();
+
+                response.EnsureSuccessStatusCode();
+
+                if (response.Content != null)
+                {
+                    var responseContent = await response.Content.ReadAsAsync<Dictionary<string, int>>();
+                    return responseContent;
+                }
+
+                return new Dictionary<string, int>();
+            }
+        }
     }
 }

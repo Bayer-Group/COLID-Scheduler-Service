@@ -54,5 +54,23 @@ namespace COLID.Scheduler.Services.Interface
         /// Processes all users stored queries in the appDataService.
         /// </summary>
         void ProcessStoredQueries();
+
+        /// <summary>
+        /// Get List of All Save Search Filters from Data Marketplace
+        /// </summary>
+        /// <returns></returns>
+        Task<Dictionary<string, int>> GetAllSubscribedSearchFiltersCountDMP();
+
+        /// <summary>
+        /// Get List of All Favorites
+        /// </summary>
+        /// <returns></returns>
+        Task<Dictionary<string, int>> GetAllFavoritesListCount();
+
+        /// <summary>
+        /// Get List of All Subscriptions
+        /// </summary>
+        /// <returns></returns>
+        Task<Dictionary<string, int>> GetAllSubscriptionsCount();
     }
 }

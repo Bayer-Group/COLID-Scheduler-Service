@@ -18,5 +18,8 @@ namespace COLID.Scheduler.Services.Interface
         /// </summary>
         /// <param name="appId">Application appID enum for which users need to be indexed</param>
         Task WriteUsersToIndex(int appId);
+        Task WriteSubscribedSearchFiltersCountToIndex(Dictionary<string, int> allSavedSearchFilters);
+        Task WriteAllFavoritesListToIndex(Dictionary<string, int> allFavoritesList);
+        Task WriteAllSubscriptionsCountToIndex(Dictionary<string, int> allSubscriptions);
     }
 }

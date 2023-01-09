@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Authentication;
@@ -62,6 +63,72 @@ namespace COLID.Scheduler.Services.Implementation
                 var accessToken = await _tokenService.GetAccessTokenForWebApiAsync();
                 response = await httpClient.SendRequestWithBearerTokenAsync(HttpMethod.Post, path,
                     null, accessToken, _cancellationToken);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (AuthenticationException ex)
+            {
+                _logger.LogError("An error occured", ex);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError("Couldn't connect to the remote search service.", ex);
+            }
+        }
+
+        public async Task WriteSubscribedSearchFiltersCountToIndex(Dictionary<string, int> allSavedSearchFilters)
+        {
+            using var httpClient = _clientFactory.CreateClient();
+            HttpResponseMessage response = null;
+            try
+            {
+                var path = $"{_userEndpoint}/writeAllSavedSearchFiltersCountToLogs";
+                var accessToken = await _tokenService.GetAccessTokenForWebApiAsync();
+                response = await httpClient.SendRequestWithBearerTokenAsync(HttpMethod.Post, path,
+                    allSavedSearchFilters, accessToken, _cancellationToken);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (AuthenticationException ex)
+            {
+                _logger.LogError("An error occured", ex);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError("Couldn't connect to the remote search service.", ex);
+            }
+        }
+
+        public async Task WriteAllFavoritesListToIndex(Dictionary<string, int> allFavoritesList)
+        {
+            using var httpClient = _clientFactory.CreateClient();
+            HttpResponseMessage response = null;
+            try
+            {
+                var path = $"{_userEndpoint}/writeFavoritesListCountToLogs";
+                var accessToken = await _tokenService.GetAccessTokenForWebApiAsync();
+                response = await httpClient.SendRequestWithBearerTokenAsync(HttpMethod.Post, path,
+                    allFavoritesList, accessToken, _cancellationToken);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (AuthenticationException ex)
+            {
+                _logger.LogError("An error occured", ex);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError("Couldn't connect to the remote search service.", ex);
+            }
+        }
+
+        public async Task WriteAllSubscriptionsCountToIndex(Dictionary<string, int> allSubscriptions)
+        {
+            using var httpClient = _clientFactory.CreateClient();
+            HttpResponseMessage response = null;
+            try
+            {
+                var path = $"{_userEndpoint}/writeAllSubscriptionsCountToLogs";
+                var accessToken = await _tokenService.GetAccessTokenForWebApiAsync();
+                response = await httpClient.SendRequestWithBearerTokenAsync(HttpMethod.Post, path,
+                    allSubscriptions, accessToken, _cancellationToken);
                 response.EnsureSuccessStatusCode();
             }
             catch (AuthenticationException ex)

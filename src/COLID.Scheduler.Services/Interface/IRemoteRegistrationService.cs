@@ -8,5 +8,6 @@ namespace COLID.Scheduler.Services.Interface
     public interface IRemoteRegistrationService
     {
         Task CheckDistributionEndpointValidityAndNotifyUsersAsync();
+        Task<Dictionary<string, string>> NotifyDataStewardsForDueResourceReview();
     }
 }

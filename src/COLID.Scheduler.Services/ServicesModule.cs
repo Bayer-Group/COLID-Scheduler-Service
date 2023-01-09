@@ -34,7 +34,17 @@ namespace COLID.Scheduler.Services
 
             services.AddTransient<IRemoteAppDataService, RemoteAppDataService>();
             services.AddTransient<IRemoteReportingService, RemoteReportingService>();
-            services.AddTransient<IMailService, MailService>();
+            if (bool.Parse(smtp["useSES"]))
+            {
+                Console.WriteLine("Using SES");
+                services.AddTransient<IMailService, SESMailService>();
+            } 
+            else
+            {
+                Console.WriteLine("Using SMTP");
+                services.AddTransient<IMailService, MailService>();
+            }
+            
             services.AddTransient<IRemoteSearchService, RemoteSearchService>();
             services.AddTransient<IRemoteRegistrationService, RemoteRegistrationService>();
 
