@@ -1,14 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using COLID.Scheduler.Common.DataModels;
+using Microsoft.Extensions.Configuration;
 
 namespace UnitTests.Builder
 {
     public class ContactBuilder
     {
         private ContactDto _contact = new ContactDto();
-
+        private static readonly string _basePath = Path.GetFullPath("appsettings.json");
+        private static readonly string _filePath = _basePath.Substring(0, _basePath.Length - 16);
+        private static IConfigurationRoot _configuration = new ConfigurationBuilder()
+                .SetBasePath(_filePath)
+            .AddJsonFile("appsettings.json")
+            .Build();
+        public static readonly string _serviceUrl = _configuration.GetValue<string>("ServiceUrl");
         public ContactBuilder()
         {
         }
@@ -21,7 +29,7 @@ namespace UnitTests.Builder
         public ContactBuilder GenerateSampleData()
         {
             WithEmailAddress("marcus.davies@bayer.com");
-            WithTypeUri(new Uri("https://pid.bayer.com/kos/19050/hasContactPerson"));
+            WithTypeUri(new Uri(_serviceUrl + "kos/19050/hasContactPerson"));
             WithTypeLabel("Contact Person");
             IsTechnical(false);
             return this;

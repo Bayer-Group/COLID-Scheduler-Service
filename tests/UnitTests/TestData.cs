@@ -1,13 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using COLID.Scheduler.Common.DataModels;
+using Microsoft.Extensions.Configuration;
 using UnitTests.Builder;
+using COLID.Scheduler.Common.Constants;
 
 namespace UnitTests
 {
     public static class TestData
     {
+        private static readonly string _basePath = Path.GetFullPath("appsettings.json");
+        private static readonly string _filePath = _basePath.Substring(0, _basePath.Length - 16);
+        private static IConfigurationRoot _configuration = new ConfigurationBuilder()
+                .SetBasePath(_filePath)
+            .AddJsonFile("appsettings.json")
+            .Build();
+        public static readonly string _serviceUrl = _configuration.GetValue<string>("ServiceUrl");
         public static AdUserDto GenerateAdUser(bool enabled = true)
         {
             var id = Guid.NewGuid().ToString();
@@ -18,7 +28,7 @@ namespace UnitTests
         public static ColidEntryContactsDto GenerateColidEntryContacts(string colidEntryLabel, IEnumerable<ContactDto> contacts)
         {
             return new ColidEntryContactBuilder()
-                .WithPidUri($"https://pid.bayer.com/{Guid.NewGuid()}")
+                .WithPidUri($"{_serviceUrl}{Guid.NewGuid()}")
                 .WithLabel(colidEntryLabel)
                 .WithContacts(contacts)
                 .WithConsumerGroupContact(GenerateContactConsumerGroupAdmin())
@@ -45,7 +55,7 @@ namespace UnitTests
         {
             return new ContactBuilder()
                 .WithEmailAddress("consumer.group.admin@bayer.com")
-                .WithTypeUri("https://pid.bayer.com/kos/19050/hasConsumerGroupContactPerson")
+                .WithTypeUri(Metadata.ConsumerGroupContact)
                 .WithTypeLabel("Contact Person")
                 .Build();
         }
@@ -54,7 +64,7 @@ namespace UnitTests
         {
             return new ContactBuilder()
                 .WithEmailAddress(email)
-                .WithTypeUri("https://pid.bayer.com/kos/19050/hasContactPerson")
+                .WithTypeUri(Metadata.ContactPerson)
                 .WithTypeLabel("Contact Person")
                 .IsTechnical(false)
                 .Build();
@@ -64,7 +74,7 @@ namespace UnitTests
         {
             return new ContactBuilder()
                 .WithEmailAddress(email)
-                .WithTypeUri("https://pid.bayer.com/kos/19050/lastChangeUser")
+                .WithTypeUri(Metadata.LastChangeUser)
                 .WithTypeLabel("Last Change User")
                 .IsTechnical(true)
                 .Build();
@@ -74,7 +84,7 @@ namespace UnitTests
         {
             return new ContactBuilder()
                 .WithEmailAddress(email)
-                .WithTypeUri("https://pid.bayer.com/kos/19050/author")
+                .WithTypeUri(Metadata.Author)
                 .WithTypeLabel("Author")
                 .IsTechnical(true)
                 .Build();
@@ -84,7 +94,7 @@ namespace UnitTests
         {
             return new ContactBuilder()
                 .WithEmailAddress(email)
-                .WithTypeUri("https://pid.bayer.com/kos/19050/hasDataSteward")
+                .WithTypeUri(Metadata.DataSteward)
                 .WithTypeLabel("Data Steward")
                 .IsTechnical(false)
                 .Build();
