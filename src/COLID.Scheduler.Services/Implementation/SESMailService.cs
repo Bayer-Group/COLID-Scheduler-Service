@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
-using COLID.Scheduler.Services.Interface;
+using COLID.Scheduler.Services.Interfaces;
 using COLID.Scheduler.Services.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

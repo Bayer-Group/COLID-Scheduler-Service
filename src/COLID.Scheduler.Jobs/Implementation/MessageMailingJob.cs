@@ -6,8 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using COLID.Scheduler.Common.Constants;
 using COLID.Scheduler.Common.DataModels;
-using COLID.Scheduler.Services.Interface;
-using COLID.SchedulerService.Jobs.Interface;
+using COLID.Scheduler.Services.Interfaces;
+using COLID.SchedulerService.Jobs.Interfaces;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 
@@ -67,7 +67,7 @@ namespace COLID.SchedulerService.Jobs.Implementation
             _logger.LogInformation($"Messages for {mailAddress} marked as sent.");
         }
 
-        private string CreateEmailBody(IEnumerable<Message> messages)
+        private static string CreateEmailBody(IEnumerable<Message> messages)
         {
             StringBuilder emailBody = new StringBuilder();
 

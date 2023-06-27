@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Threading;
 using COLID.Scheduler.Common.Constants;
 using COLID.Scheduler.Jobs.Filter;
-using COLID.Scheduler.Jobs.Interface;
+using COLID.Scheduler.Jobs.Implementation;
+using COLID.Scheduler.Jobs.Interfaces;
 using COLID.SchedulerService.Jobs.Implementation;
-using COLID.SchedulerService.Jobs.Interface;
+using COLID.SchedulerService.Jobs.Interfaces;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using Hangfire.MySql;
@@ -36,7 +37,9 @@ namespace COLID.SchedulerService.Hangfire
             services.AddTransient<IUserInvalidNotificationJob, UserInvalidNotificationJob>();
             services.AddTransient<IResourceStatisticsJob, ResourceStatisticsJob>();
             services.AddTransient<IUniqueUserStatisticsJob, UniqueUserStatisticsJob>();
-            services.AddTransient<IInvalidDitributionEndpointNotificationJob, InvalidDitributionEndpointNotificationJob>();
+            services.AddTransient<IBrokenEndpointNotificationJob, BrokenEndpointNotificationJob>();
+            services.AddTransient<IBrokenContactNotificationJob, BrokenContactNotificationJob>();
+            services.AddTransient<ISetBrokenFlagsInElasticJob, SetBrokenFlagsInElasticJob>();
             services.AddTransient<IDueResourcesNotificationJob, DueResourcesNotificationJob>();
             services.AddTransient<ISaveSearchesSubscriptionsFavListStasticsJob, SaveSearchesSubscriptionsFavListStasticsJob>();
 
@@ -76,8 +79,8 @@ namespace COLID.SchedulerService.Hangfire
                   .UseSimpleAssemblyNameTypeSerializer()
                   .UseRecommendedSerializerSettings()
                   .UseStorage(new MySqlStorage(config.GetConnectionString("MySQLConnection").
-                                                           Replace("{DB_USER}", config.GetValue<string>("Database:User")).
-                                                           Replace("{DB_PASSWORD}", config.GetValue<string>("Database:Password")),
+                                                           Replace("{DB_USER}", config.GetValue<string>("Database:User"), StringComparison.Ordinal).
+                                                           Replace("{DB_PASSWORD}", config.GetValue<string>("Database:Password"), StringComparison.Ordinal),
                                              new MySqlStorageOptions
                                              {
                                                  TransactionIsolationLevel = System.Transactions.IsolationLevel.ReadCommitted,
@@ -112,7 +115,7 @@ namespace COLID.SchedulerService.Hangfire
             DashboardOptions dOptions = new DashboardOptions();
             dOptions.Authorization = new[] { new DashboardAuthorizationFilter() };
 
-            if (config.GetValue<string>("EnvironmentLabel").Equals("Production"))
+            if (config.GetValue<string>("EnvironmentLabel").Equals("Production", StringComparison.Ordinal))
             {
                 dOptions.IsReadOnlyFunc = context => true;
             }
@@ -187,11 +190,27 @@ namespace COLID.SchedulerService.Hangfire
                 TimeZoneInfo.Local,
                 Queue.Alpha);
 
-            var InvalidDitributionEndpointNotificationJob = config.GetValue<string>("CronJobConfig:InvalidDitributionEndpointNotificationJob");
-            logger.LogInformation("CronJob config for InvalidDitributionEndpointNotificationJob: {InvalidDitributionEndpointNotificationJob}", InvalidDitributionEndpointNotificationJob);
-            RecurringJob.AddOrUpdate<IInvalidDitributionEndpointNotificationJob>(nameof(InvalidDitributionEndpointNotificationJob),
+            var BrokenEndpointNotificationJob = config.GetValue<string>("CronJobConfig:BrokenEndpointNotificationJob");
+            logger.LogInformation("CronJob config for BrokenEndpointNotificationJob: {BrokenEndpointNotificationJob}", BrokenEndpointNotificationJob);
+            RecurringJob.AddOrUpdate<IBrokenEndpointNotificationJob>(nameof(BrokenEndpointNotificationJob),
                 job => job.ExecuteAsync(CancellationToken.None),
-                config.GetValue<string>("CronJobConfig:InvalidDitributionEndpointNotificationJob"),
+                config.GetValue<string>("CronJobConfig:BrokenEndpointNotificationJob"),
+                TimeZoneInfo.Local,
+                Queue.Alpha);
+
+            var BrokenContactsNotificationJob = config.GetValue<string>("CronJobConfig:BrokenContactsNotificationJob");
+            logger.LogInformation("CronJob config for BrokenContactsNotificationJob: {BrokenContactsNotificationJob}", BrokenContactsNotificationJob);
+            RecurringJob.AddOrUpdate<IBrokenContactNotificationJob>(nameof(BrokenContactsNotificationJob),
+                job => job.ExecuteAsync(CancellationToken.None),
+                config.GetValue<string>("CronJobConfig:BrokenContactsNotificationJob"),
+                TimeZoneInfo.Local,
+                Queue.Alpha);
+
+            var SetBrokenFlagsInElasticJob = config.GetValue<string>("CronJobConfig:SetBrokenFlagsInElastic");
+            logger.LogInformation("CronJob config for SetBrokenFlagsInElasticJob: {SetBrokenFlagsInElasticJob}", SetBrokenFlagsInElasticJob);
+            RecurringJob.AddOrUpdate<ISetBrokenFlagsInElasticJob>(nameof(SetBrokenFlagsInElasticJob),
+                job => job.ExecuteAsync(CancellationToken.None),
+                config.GetValue<string>("CronJobConfig:SetBrokenFlagsInElastic"),
                 TimeZoneInfo.Local,
                 Queue.Alpha);
 

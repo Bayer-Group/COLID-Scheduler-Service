@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace COLID.Scheduler.Common
 {
     // Original from https://docs.microsoft.com/de-de/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format
-    public class RegexUtilities
+    public static class RegexUtilities
     {
         public static bool IsValidEmail(string email)
         {

@@ -16,7 +16,7 @@ namespace UnitTests.Builder
                 .SetBasePath(_filePath)
             .AddJsonFile("appsettings.json")
             .Build();
-        public static readonly string _serviceUrl = _configuration.GetValue<string>("ServiceUrl");
+        private static readonly string _serviceUrl = _configuration.GetValue<string>("ServiceUrl");
         public ContactBuilder()
         {
         }

@@ -9,7 +9,7 @@ namespace COLID.Scheduler.Common.DataModels
     {
         public string ContactMail { get; set; }
 
-        public List<ColidEntryInvalidUsersDto> ColidEntries { get; set; }
+        public IList<ColidEntryInvalidUsersDto> ColidEntries { get; set; }
 
         public ColidEntryContactInvalidUsersDto()
         {

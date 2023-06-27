@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Hangfire;
 
-namespace COLID.SchedulerService.Jobs.Interface
+namespace COLID.SchedulerService.Jobs.Interfaces
 {
     /// <summary>
     /// Base interface for jobs.

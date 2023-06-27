@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using COLID.Common.Extensions;
 using COLID.Scheduler.Common.DataModels;
-using COLID.Scheduler.Services.Interface;
+using COLID.Scheduler.Services.Interfaces;
 using COLID.SchedulerService.Jobs.Implementation;
 using Hangfire;
 using Hangfire.Common;
@@ -110,15 +110,15 @@ namespace COLID.SchedulerService.UnitTests.Jobs
             Assert.NotNull(resultList);
             Assert.NotEmpty(resultList);
 
-            var christian = resultList.First(x => x.ContactMail.Equals("christian.kaubisch.ext@bayer.com"));
+            var christian = resultList.First(x => x.ContactMail.Equals("christian.kaubisch.ext@bayer.com", StringComparison.Ordinal));
             Assert.NotNull(christian);
             Assert.Equal(2, christian.ColidEntries.Count);
 
-            var simon = resultList.First(x => x.ContactMail.Equals("simon.lansing.ext@bayer.com"));
+            var simon = resultList.First(x => x.ContactMail.Equals("simon.lansing.ext@bayer.com", StringComparison.Ordinal));
             Assert.NotNull(simon);
             Assert.Equal(1, simon.ColidEntries.Count);
 
-            var tim = resultList.FirstOrDefault(x => x.ContactMail.Equals("tim.odenthal.ext@bayer.com"));
+            var tim = resultList.FirstOrDefault(x => x.ContactMail.Equals("tim.odenthal.ext@bayer.com", StringComparison.Ordinal));
             Assert.NotNull(tim);
             Assert.Equal(1, tim.ColidEntries.Count);
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace COLID.Scheduler.Services.Interface
+namespace COLID.Scheduler.Services.Interfaces
 {
     /// <summary>
     /// Service to send mails via the AWS SES

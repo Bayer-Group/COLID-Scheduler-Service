@@ -1,7 +1,7 @@
 ﻿using System;
 using COLID.Scheduler.Services.Configuration;
 using COLID.Scheduler.Services.Implementation;
-using COLID.Scheduler.Services.Interface;
+using COLID.Scheduler.Services.Interfaces;
 using COLID.Scheduler.Services.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

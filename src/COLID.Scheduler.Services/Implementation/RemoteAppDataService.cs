@@ -7,7 +7,7 @@ using COLID.Identity.Extensions;
 using COLID.Identity.Services;
 using COLID.Scheduler.Common.DataModels;
 using COLID.Scheduler.Services.Configuration;
-using COLID.Scheduler.Services.Interface;
+using COLID.Scheduler.Services.Interfaces;
 using CorrelationId.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;

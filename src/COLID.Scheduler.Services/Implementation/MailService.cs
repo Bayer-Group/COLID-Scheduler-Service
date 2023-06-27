@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
-using COLID.Scheduler.Services.Interface;
+using COLID.Scheduler.Services.Interfaces;
 using COLID.Scheduler.Services.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -31,7 +31,7 @@ namespace COLID.Scheduler.Services.Implementation
                         client.Credentials = new NetworkCredential(_smtpOptions.User, _smtpOptions.Password);
                     }
 
-                    var message = new MailMessage();
+                    using var message = new MailMessage();
                     message.IsBodyHtml = true;
                     message.Subject = subject;
                     message.Body = body;

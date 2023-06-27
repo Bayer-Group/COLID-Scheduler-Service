@@ -11,7 +11,7 @@ namespace COLID.Scheduler.Common.Constants
                      .SetBasePath(_filePath)
                     .AddJsonFile("appsettings.json")
                     .Build();
-        public static readonly string _serviceUrl = _configuration.GetValue<string>("ServiceUrl");
+        private static readonly string _serviceUrl = _configuration.GetValue<string>("ServiceUrl");
 
         public static readonly string Author = _serviceUrl + "kos/19050/author";
 

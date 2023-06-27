@@ -2,12 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using COLID.Scheduler.Common.Constants;
-using COLID.Scheduler.Jobs.Interface;
-using COLID.SchedulerService.Jobs.Interface;
+using COLID.Scheduler.Jobs.Interfaces;
+using COLID.SchedulerService.Jobs.Interfaces;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 using COLID.StatisticsLog.Services;
-using COLID.Scheduler.Services.Interface;
+using COLID.Scheduler.Services.Interfaces;
 using COLID.Scheduler.Common.DataModels;
 using System.Collections.Generic;
 using System.Linq;

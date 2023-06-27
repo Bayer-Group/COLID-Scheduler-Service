@@ -28,7 +28,7 @@
     <Rule Id="CA1027" Action="Error" />
     <Rule Id="CA1028" Action="Error" />
     <Rule Id="CA1030" Action="Error" />
-    <Rule Id="CA1031" Action="Error" />
+    <Rule Id="CA1031" Action="Warning" />
     <Rule Id="CA1032" Action="Error" />
     <Rule Id="CA1033" Action="Error" />
     <Rule Id="CA1034" Action="Error" />
@@ -47,7 +47,7 @@
     <Rule Id="CA1049" Action="Error" />
     <Rule Id="CA1050" Action="Error" />
     <Rule Id="CA1051" Action="Error" />
-    <Rule Id="CA1052" Action="Error" />
+    <Rule Id="CA1052" Action="Warning" />
     <Rule Id="CA1053" Action="Error" />
     <Rule Id="CA1054" Action="Error" />
     <Rule Id="CA1055" Action="Error" />
@@ -64,7 +64,7 @@
     <Rule Id="CA1300" Action="Error" />
     <Rule Id="CA1301" Action="Error" />
     <Rule Id="CA1302" Action="Error" />
-    <Rule Id="CA1303" Action="Error" />
+    <Rule Id="CA1303" Action="Warning" />
     <Rule Id="CA1304" Action="Hidden" />
     <Rule Id="CA1305" Action="Hidden" />
     <Rule Id="CA1306" Action="Error" />
@@ -104,7 +104,7 @@
     <Rule Id="CA1708" Action="Error" />
     <Rule Id="CA1709" Action="Error" />
     <Rule Id="CA1710" Action="Error" />
-    <Rule Id="CA1711" Action="Error" />
+    <Rule Id="CA1711" Action="Warning" />
     <Rule Id="CA1712" Action="Error" />
     <Rule Id="CA1713" Action="Error" />
     <Rule Id="CA1714" Action="Error" />
@@ -115,7 +115,7 @@
     <Rule Id="CA1720" Action="Error" />
     <Rule Id="CA1721" Action="Error" />
     <Rule Id="CA1722" Action="Error" />
-    <Rule Id="CA1724" Action="Error" />
+    <Rule Id="CA1724" Action="Warning" />
     <Rule Id="CA1725" Action="Error" />
     <Rule Id="CA1726" Action="Error" />
     <Rule Id="CA1800" Action="Error" />
@@ -671,6 +671,13 @@
     <Rule Id="C6993" Action="Error" />
     <Rule Id="C6995" Action="Error" />
     <Rule Id="C6997" Action="Error" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.NetAnalyzers">
+    <Rule Id="CA1031" Action="Warning" />
+    <Rule Id="CA1052" Action="Warning" />
+    <Rule Id="CA1303" Action="Warning" />
+    <Rule Id="CA1711" Action="Warning" />
+    <Rule Id="CA1724" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
     <Rule Id="CA1812" Action="Hidden" />

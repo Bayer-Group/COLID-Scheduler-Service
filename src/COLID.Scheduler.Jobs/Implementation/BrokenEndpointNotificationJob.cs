@@ -11,13 +11,13 @@ using COLID.Scheduler.Services.Interfaces;
 
 namespace COLID.SchedulerService.Jobs.Implementation
 {
-    class InvalidDitributionEndpointNotificationJob : IInvalidDitributionEndpointNotificationJob
+    class BrokenEndpointNotificationJob : IBrokenEndpointNotificationJob
     {
         private readonly IBackgroundJobClient _backgroundJobClient;
-        private readonly ILogger<InvalidDitributionEndpointNotificationJob> _logger;
+        private readonly ILogger<BrokenEndpointNotificationJob> _logger;
         private readonly IRemoteRegistrationService _registrationService;
 
-        public InvalidDitributionEndpointNotificationJob(IBackgroundJobClient backgroundJobClient, ILogger<InvalidDitributionEndpointNotificationJob> logger, IRemoteRegistrationService registrationService)
+        public BrokenEndpointNotificationJob(IBackgroundJobClient backgroundJobClient, ILogger<BrokenEndpointNotificationJob> logger, IRemoteRegistrationService registrationService)
         {
             _backgroundJobClient = backgroundJobClient;
             _logger = logger;
@@ -29,7 +29,7 @@ namespace COLID.SchedulerService.Jobs.Implementation
         public async Task ExecuteAsync(CancellationToken token)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            _backgroundJobClient.Enqueue<IInvalidDitributionEndpointNotificationJob>(x => x.NotifyUsersForInvalidDistributionEndpoints());
+            _backgroundJobClient.Enqueue<IBrokenEndpointNotificationJob>(x => x.NotifyUsersForInvalidDistributionEndpoints());
             _logger.LogInformation("InvalidDitributionEndpointNotification Job Finished");
         }
 

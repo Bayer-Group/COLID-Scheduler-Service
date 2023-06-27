@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using COLID.Scheduler.Common.DataModels;
 
-namespace COLID.SchedulerService.Jobs.Interface
+namespace COLID.SchedulerService.Jobs.Interfaces
 {
     /// <summary>
     /// Job to distribute the mailing of (stored) messages to the user.

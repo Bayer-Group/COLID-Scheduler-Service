@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using COLID.Scheduler.Services.Implementation;
-using COLID.Scheduler.Services.Interface;
+using COLID.Scheduler.Services.Interfaces;
 using COLID.Scheduler.Services.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

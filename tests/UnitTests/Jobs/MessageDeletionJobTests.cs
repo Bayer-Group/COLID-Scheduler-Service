@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using COLID.Common.Extensions;
 using COLID.Scheduler.Common.DataModels;
-using COLID.Scheduler.Services.Interface;
+using COLID.Scheduler.Services.Interfaces;
 using COLID.SchedulerService.Jobs.Implementation;
 using Hangfire;
 using Hangfire.Common;

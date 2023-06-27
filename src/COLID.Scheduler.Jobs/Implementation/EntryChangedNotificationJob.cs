@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using COLID.Scheduler.Common.Constants;
-using COLID.SchedulerService.Jobs.Interface;
+using COLID.SchedulerService.Jobs.Interfaces;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 

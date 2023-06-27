@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using COLID.Scheduler.Common;
 using COLID.Scheduler.Common.Constants;
 using COLID.Scheduler.Common.DataModels;
-using COLID.Scheduler.Jobs.Interface;
-using COLID.Scheduler.Services.Interface;
+using COLID.Scheduler.Jobs.Interfaces;
+using COLID.Scheduler.Services.Interfaces;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 using Queue = COLID.Scheduler.Common.Constants.Queue;
@@ -107,7 +107,7 @@ namespace COLID.SchedulerService.Jobs.Implementation
                 .All(c => c.IsTechnicalContact);
         }
 
-        private IEnumerable<string> RemoveInvalidEmailsByPattern(IEnumerable<string> adUserEmailSet)
+        private static IEnumerable<string> RemoveInvalidEmailsByPattern(IEnumerable<string> adUserEmailSet)
         {
             var validEmails = new HashSet<string>(adUserEmailSet.Count());
             foreach (var potentialMail in adUserEmailSet)

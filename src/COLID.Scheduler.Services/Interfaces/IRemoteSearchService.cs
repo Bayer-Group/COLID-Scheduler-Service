@@ -5,7 +5,7 @@ using COLID.Scheduler.Common.DataModels;
 using Nest;
 using Newtonsoft.Json.Linq;
 
-namespace COLID.Scheduler.Services.Interface
+namespace COLID.Scheduler.Services.Interfaces
 {
     /// <summary>
     /// Service to handle communication and authentication with the external SearchService.

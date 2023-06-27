@@ -1,4 +1,4 @@
-﻿namespace COLID.SchedulerService.Jobs.Interface
+﻿namespace COLID.SchedulerService.Jobs.Interfaces
 {
     /// <summary>
     /// Job to distribute the deletion of stored messages.

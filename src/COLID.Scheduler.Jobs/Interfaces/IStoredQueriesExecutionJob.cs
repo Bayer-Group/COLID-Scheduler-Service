@@ -1,4 +1,4 @@
-namespace COLID.SchedulerService.Jobs.Interface
+﻿namespace COLID.SchedulerService.Jobs.Interfaces
 {
     /// <summary>
     /// Job to trigger the execution of stored queries.

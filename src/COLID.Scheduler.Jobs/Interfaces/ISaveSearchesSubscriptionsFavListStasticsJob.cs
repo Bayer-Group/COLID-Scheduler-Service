@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using COLID.SchedulerService.Jobs.Interface;
+using COLID.SchedulerService.Jobs.Interfaces;
 
-namespace COLID.Scheduler.Jobs.Interface
+namespace COLID.Scheduler.Jobs.Interfaces
 {
     /// <summary>
     /// This Job fetches the Saved Searches, Subscriptions and Favorites List 

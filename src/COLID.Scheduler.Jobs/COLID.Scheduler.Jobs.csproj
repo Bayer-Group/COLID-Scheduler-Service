@@ -19,4 +19,8 @@
     <ProjectReference Include="..\COLID.Scheduler.Services\COLID.Scheduler.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interface\" />
+  </ItemGroup>
+
 </Project>
