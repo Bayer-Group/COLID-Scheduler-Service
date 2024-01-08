@@ -1,29 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+﻿using COLID.Common.Logger;
+using COLID.Exception;
+using COLID.Identity;
+using COLID.Scheduler.Services;
+using COLID.SchedulerService.Hangfire;
+using COLID.StatisticsLog;
+using CorrelationId;
+using CorrelationId.DependencyInjection;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace COLID.SchedulerService
+var builder = WebApplication.CreateBuilder(args);
+ConfigurationManager configuration = builder.Configuration;
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddHttpClient();
+builder.Services.AddHealthChecks();
+builder.Services.AddDefaultCorrelationId();
+builder.Services.AddCorrelationIdLogger();
+builder.Services.AddLogging();
+builder.Services.AddServicesModule(configuration);
+builder.Services.RegisterJobs();
+builder.Services.RegisterHangfire(configuration);
+builder.Services.AddIdentityModule(configuration);
+builder.Services.AddStatisticsLogModule(configuration);
+
+var app = builder.Build();
+
+app.UseCorrelationId();
+app.UseRouting();
+app.UseEndpoints(endpoints =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    endpoints.MapHealthChecks("/health");
+});
+app.SetupHangfireServer(configuration);
+app.SetupHangfireJobs(configuration);
+app.UseExceptionMiddleware();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddConsole();
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
-}
+app.Run();
+
